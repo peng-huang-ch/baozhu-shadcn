@@ -1,16 +1,38 @@
 import { redirect } from "next/navigation"
+import { Order } from "@prisma/client"
+import type { PageNumberPaginationMeta } from "prisma-extension-pagination"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/session"
-import { EmptyPlaceholder } from "@/components/empty-placeholder"
+import { DataTable } from "@/components/data-table"
 import { DashboardHeader } from "@/components/header"
-import { PostCreateButton } from "@/components/post-create-button"
-import { PostItem } from "@/components/post-item"
 import { DashboardShell } from "@/components/shell"
+
+import { columns } from "./columns"
 
 export const metadata = {
   title: "Dashboard",
+}
+
+async function getData(
+  page: number,
+  perPage: number
+): Promise<{
+  meta: PageNumberPaginationMeta
+  data: Order[]
+}> {
+  const where = {}
+  const [data, meta] = await db.order
+    .paginate({
+      where,
+    })
+    .withPages({
+      limit: perPage,
+      page,
+      includePageCount: true,
+    })
+  return { meta, data }
 }
 
 export default async function DashboardPage() {
@@ -19,44 +41,13 @@ export default async function DashboardPage() {
   if (!user) {
     redirect(authOptions?.pages?.signIn || "/login")
   }
-
-  const posts = await db.post.findMany({
-    where: {
-      authorId: user.id,
-    },
-    select: {
-      id: true,
-      title: true,
-      published: true,
-      createdAt: true,
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
-  })
+  const { data, meta } = await getData(1, 5)
 
   return (
     <DashboardShell>
-      <DashboardHeader heading="Posts" text="Create and manage posts.">
-        <PostCreateButton />
-      </DashboardHeader>
-      <div>
-        {posts?.length ? (
-          <div className="divide-y divide-border rounded-md border">
-            {posts.map((post) => (
-              <PostItem key={post.id} post={post} />
-            ))}
-          </div>
-        ) : (
-          <EmptyPlaceholder>
-            <EmptyPlaceholder.Icon name="post" />
-            <EmptyPlaceholder.Title>No posts created</EmptyPlaceholder.Title>
-            <EmptyPlaceholder.Description>
-              You don&apos;t have any posts yet. Start creating content.
-            </EmptyPlaceholder.Description>
-            <PostCreateButton variant="outline" />
-          </EmptyPlaceholder>
-        )}
+      <DashboardHeader heading="Transactions" text="Manage transactions." />
+      <div className="grid gap-10">
+        <DataTable columns={columns} data={data} />
       </div>
     </DashboardShell>
   )

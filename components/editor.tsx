@@ -5,27 +5,27 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import EditorJS from "@editorjs/editorjs"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Post } from "@prisma/client"
+import { Order } from "@prisma/client"
 import { useForm } from "react-hook-form"
 import TextareaAutosize from "react-textarea-autosize"
 import * as z from "zod"
 
 import "@/styles/editor.css"
 import { cn } from "@/lib/utils"
-import { postPatchSchema } from "@/lib/validations/post"
+import { orderPatchSchema } from "@/lib/validations/order"
 import { buttonVariants } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
 interface EditorProps {
-  post: Pick<Post, "id" | "title" | "content" | "published">
+  order: Order
 }
 
-type FormData = z.infer<typeof postPatchSchema>
+type FormData = z.infer<typeof orderPatchSchema>
 
-export function Editor({ post }: EditorProps) {
+export function Editor({ order: post }: EditorProps) {
   const { register, handleSubmit } = useForm<FormData>({
-    resolver: zodResolver(postPatchSchema),
+    resolver: zodResolver(orderPatchSchema),
   })
   const ref = React.useRef<EditorJS>()
   const router = useRouter()
@@ -42,7 +42,7 @@ export function Editor({ post }: EditorProps) {
     const LinkTool = (await import("@editorjs/link")).default
     const InlineCode = (await import("@editorjs/inline-code")).default
 
-    const body = postPatchSchema.parse(post)
+    const body = orderPatchSchema.parse(post)
 
     if (!ref.current) {
       const editor = new EditorJS({
@@ -52,7 +52,7 @@ export function Editor({ post }: EditorProps) {
         },
         placeholder: "Type here to write your post...",
         inlineToolbar: true,
-        data: body.content,
+        data: undefined,
         tools: {
           header: Header,
           linkTool: LinkTool,

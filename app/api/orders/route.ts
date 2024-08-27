@@ -4,11 +4,14 @@ import * as z from "zod"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { RequiresProPlanError } from "@/lib/exceptions"
-import { getUserSubscriptionPlan } from "@/lib/subscription"
 
-const postCreateSchema = z.object({
-  title: z.string(),
-  content: z.string().optional(),
+const orderCreateSchema = z.object({
+  apartment: z.string(),
+  sector: z.string(),
+  count: z.number(),
+  listingPrice: z.number().optional(),
+  transactionPrice: z.number(),
+  totalTransactionPrice: z.number(),
 })
 
 export async function GET() {
@@ -20,17 +23,7 @@ export async function GET() {
     }
 
     const { user } = session
-    const posts = await db.post.findMany({
-      select: {
-        id: true,
-        title: true,
-        published: true,
-        createdAt: true,
-      },
-      where: {
-        authorId: user.id,
-      },
-    })
+    const posts = await db.order.findMany()
 
     return new Response(JSON.stringify(posts))
   } catch (error) {
@@ -46,38 +39,23 @@ export async function POST(req: Request) {
       return new Response("Unauthorized", { status: 403 })
     }
 
-    const { user } = session
-    const subscriptionPlan = await getUserSubscriptionPlan(user.id)
-
-    // If user is on a free plan.
-    // Check if user has reached limit of 3 posts.
-    if (!subscriptionPlan?.isPro) {
-      const count = await db.post.count({
-        where: {
-          authorId: user.id,
-        },
-      })
-
-      if (count >= 3) {
-        throw new RequiresProPlanError()
-      }
-    }
-
     const json = await req.json()
-    const body = postCreateSchema.parse(json)
-
-    const post = await db.post.create({
+    const body = orderCreateSchema.parse(json)
+    const order = await db.order.create({
       data: {
-        title: body.title,
-        content: body.content,
-        authorId: session.user.id,
+        apartment: body.apartment,
+        sector: body.sector,
+        count: body.count,
+        listingPrice: body.listingPrice,
+        transactionPrice: body.transactionPrice,
+        totalTransactionPrice: body.totalTransactionPrice,
       },
       select: {
         id: true,
       },
     })
 
-    return new Response(JSON.stringify(post))
+    return new Response(JSON.stringify(order))
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new Response(JSON.stringify(error.issues), { status: 422 })

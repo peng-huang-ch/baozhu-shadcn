@@ -1,22 +1,21 @@
 import { notFound, redirect } from "next/navigation"
-import { Post, User } from "@prisma/client"
+import { Order, User } from "@prisma/client"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/session"
 import { Editor } from "@/components/editor"
 
-async function getPostForUser(postId: Post["id"], userId: User["id"]) {
-  return await db.post.findFirst({
+async function getOrder(orderId: Order["id"]) {
+  return await db.order.findFirst({
     where: {
-      id: postId,
-      authorId: userId,
+      id: orderId,
     },
   })
 }
 
 interface EditorPageProps {
-  params: { postId: string }
+  params: { orderId: string }
 }
 
 export default async function EditorPage({ params }: EditorPageProps) {
@@ -26,19 +25,19 @@ export default async function EditorPage({ params }: EditorPageProps) {
     redirect(authOptions?.pages?.signIn || "/login")
   }
 
-  const post = await getPostForUser(params.postId, user.id)
+  const order = await getOrder(params.orderId)
 
-  if (!post) {
+  if (!order) {
     notFound()
   }
 
   return (
     <Editor
-      post={{
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        published: post.published,
+      order={{
+        id: order.id,
+        title: order.title,
+        content: order.content,
+        published: order.published,
       }}
     />
   )

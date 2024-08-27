@@ -8,40 +8,32 @@ import { ButtonProps, buttonVariants } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface PostCreateButtonProps extends ButtonProps {}
+interface OrderCreateButtonProps extends ButtonProps {}
 
-export function PostCreateButton({
+export function OrderCreateButton({
   className,
   variant,
   ...props
-}: PostCreateButtonProps) {
+}: OrderCreateButtonProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
   async function onClick() {
     setIsLoading(true)
 
-    const response = await fetch("/api/posts", {
+    const response = await fetch("/api/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: "Untitled Post",
+        title: "Untitled Order",
       }),
     })
 
     setIsLoading(false)
-
+    console.log('response : ', response)
     if (!response?.ok) {
-      if (response.status === 402) {
-        return toast({
-          title: "Limit of 3 posts reached.",
-          description: "Please upgrade to the PRO plan.",
-          variant: "destructive",
-        })
-      }
-
       return toast({
         title: "Something went wrong.",
         description: "Your post was not created. Please try again.",
@@ -49,12 +41,12 @@ export function PostCreateButton({
       })
     }
 
-    const post = await response.json()
+    const order = await response.json()
 
     // This forces a cache invalidation.
     router.refresh()
 
-    router.push(`/editor/${post.id}`)
+    router.push(`/editor/${order.id}`)
   }
 
   return (
@@ -75,7 +67,7 @@ export function PostCreateButton({
       ) : (
         <Icons.add className="mr-2 h-4 w-4" />
       )}
-      New post
+      New order
     </button>
   )
 }
