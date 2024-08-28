@@ -63,3 +63,5 @@ export type UserSubscriptionPlan = SubscriptionPlan &
     stripeCurrentPeriodEnd: number
     isPro: boolean
   }
+
+export { type PageNumberPaginationMeta } from "prisma-extension-pagination"

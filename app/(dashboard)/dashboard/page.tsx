@@ -5,11 +5,11 @@ import type { PageNumberPaginationMeta } from "prisma-extension-pagination"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/session"
-import { DataTable } from "@/components/data-table"
 import { DashboardHeader } from "@/components/header"
 import { DashboardShell } from "@/components/shell"
 
 import { columns } from "./orders/columns"
+import { DataTable } from "./orders/data-table"
 
 export const metadata = {
   title: "Dashboard",
@@ -47,7 +47,7 @@ export default async function DashboardPage() {
     <DashboardShell>
       <DashboardHeader heading="Transactions" text="Manage transactions." />
       <div className="grid gap-10">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} meta={meta} />
       </div>
     </DashboardShell>
   )
