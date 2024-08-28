@@ -3,7 +3,7 @@ import * as z from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { postPatchSchema } from "@/lib/validations/post"
+import { orderPatchSchema } from "@/lib/validations/order"
 
 const routeContextSchema = z.object({
   params: z.object({
@@ -56,17 +56,20 @@ export async function PATCH(
 
     // Get the request body and validate it.
     const json = await req.json()
-    const body = postPatchSchema.parse(json)
+    const body = orderPatchSchema.parse(json)
 
-    // Update the post.
-    // TODO: Implement sanitization for content.
+    // Update the order.
     await db.order.update({
       where: {
         id: params.postId,
       },
       data: {
-        title: body.title,
-        content: body.content,
+        apartment: body.apartment,
+        sector: body.sector,
+        count: body.count,
+        listingPrice: body.listingPrice,
+        transactionPrice: body.transactionPrice,
+        totalTransactionPrice: body.totalTransactionPrice,
       },
     })
 

@@ -6,12 +6,14 @@ import { db } from "@/lib/db"
 import { RequiresProPlanError } from "@/lib/exceptions"
 
 const orderCreateSchema = z.object({
+  district: z.string(),
   apartment: z.string(),
   sector: z.string(),
   count: z.number(),
   listingPrice: z.number().optional(),
   transactionPrice: z.number(),
   totalTransactionPrice: z.number(),
+  transactionAt: z.date(),
 })
 
 export async function GET() {
@@ -43,12 +45,14 @@ export async function POST(req: Request) {
     const body = orderCreateSchema.parse(json)
     const order = await db.order.create({
       data: {
+        district: body.district,
         apartment: body.apartment,
         sector: body.sector,
         count: body.count,
         listingPrice: body.listingPrice,
         transactionPrice: body.transactionPrice,
         totalTransactionPrice: body.totalTransactionPrice,
+        transactionAt: body.transactionAt,
       },
       select: {
         id: true,
