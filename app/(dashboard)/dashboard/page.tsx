@@ -9,7 +9,7 @@ import { DataTable } from "@/components/data-table"
 import { DashboardHeader } from "@/components/header"
 import { DashboardShell } from "@/components/shell"
 
-import { columns } from "./columns"
+import { columns } from "./orders/columns"
 
 export const metadata = {
   title: "Dashboard",

@@ -45,7 +45,9 @@ export const columns: ColumnDef<Order>[] = [
     header: "成交总价(网签)",
     cell: ({ row }) => {
       const order = row.original
-      return <span>{order.totalTransactionPrice / 10000}</span>
+      return (
+        <span>{(order.totalTransactionPrice / 10000).toLocaleString()}</span>
+      )
     },
   },
   {
@@ -76,7 +78,6 @@ export const columns: ColumnDef<Order>[] = [
               Copy order ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
             <DropdownMenuItem>View order details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
