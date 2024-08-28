@@ -75,11 +75,13 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "totalTransactionPrice",
-    header: "成交总价(网签)",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="成交总价(网签)" />
+    ),
     cell: ({ row }) => {
       const order = row.original
       return (
-        <span>{(order.totalTransactionPrice / 10000).toLocaleString()}</span>
+        <span>{(order.totalTransactionPrice / 10000).toLocaleString()}万</span>
       )
     },
   },
@@ -88,7 +90,7 @@ export const columns: ColumnDef<Order>[] = [
     header: "成交时间",
     cell: ({ row }) => {
       const order = row.original
-      return <span>{format(order.transactionAt, "dd/MM/yyyy")}</span>
+      return <span>{format(new Date(order.transactionAt), "dd/MM/yyyy")}</span>
     },
   },
   {

@@ -3,11 +3,13 @@ import localFont from "next/font/local"
 
 import "@/styles/globals.css"
 import { siteConfig } from "@/config/site"
-import {  cn } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
+
+import { ReactQueryClientProvider } from "./react-query"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -83,7 +85,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
           <Analytics />
           <Toaster />
           <TailwindIndicator />

@@ -8,9 +8,9 @@ export const orderSchema = z.object({
   apartment: z.string(),
   sector: z.string(),
   count: z.number(),
-  listingPrice: z.number().optional(),
+  listingPrice: z.number().optional().nullable(),
   transactionPrice: z.number(),
   totalTransactionPrice: z.number(),
-  transactionAt: z.date(),
+  transactionAt: z.string().transform((value) => new Date(value)),
 })
 export type Order = z.infer<typeof orderSchema>

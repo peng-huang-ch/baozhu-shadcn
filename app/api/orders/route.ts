@@ -21,8 +21,8 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const q = searchParams.get("q")
-    const page = Number(searchParams.get("page") || 1)
-    const perPage = Number(searchParams.get("perPage") || 5)
+    const page = Math.max(Number(searchParams.get("page") || 1), 1)
+    const pageSize = Math.max(Number(searchParams.get("pageSize") || 5), 1)
     const session = await getServerSession(authOptions)
     if (!session) {
       return new Response("Unauthorized", { status: 403 })
@@ -40,10 +40,11 @@ export async function GET(req: Request) {
         where,
       })
       .withPages({
-        limit: perPage,
+        limit: pageSize,
         page,
         includePageCount: true,
       })
+
     return new Response(JSON.stringify({ data, meta }))
   } catch (error) {
     return new Response(null, { status: 500 })
